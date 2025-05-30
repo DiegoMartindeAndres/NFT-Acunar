@@ -4,9 +4,13 @@
 
 Esta guía está dividida en dos partes:
 
-1️⃣ Subida de imagen y metadatos a IPFS usando Pinata
 
-2️⃣ Clonación, configuración y despliegue del proyecto NFT con Hardhat
+
+1️⃣ Instalación de herramientas para trabajar.
+
+2️⃣ Subida de imagen y metadatos a IPFS usando Pinata
+
+3️⃣ Clonación, configuración y despliegue del proyecto NFT con Hardhat
 
 > 🛠️ Esta versión ha sido adaptada para evitar conflictos de dependencias y facilitar la ejecución directa.
 
@@ -24,7 +28,57 @@ Esta guía está dividida en dos partes:
 
 ---
 
-## 📁 Parte 1: Crear y subir imagen + metadatos a IPFS
+## 📁 Parte 1: Verificar la instalación de `git`, `node` y `npm`
+
+### 🔧 ¿Qué son `git`, `node` y `npm`?
+
+Antes de empezar, veamos brevemente qué es cada una de estas herramientas que vas a necesitar:
+
+* **🐙 Git**: Es un sistema de control de versiones distribuido. Te permite clonar, guardar y gestionar cambios en proyectos de código de forma colaborativa. Es fundamental para trabajar con repositorios en GitHub o similares.
+
+* **🟩 Node.js (`node`)**: Es un entorno de ejecución para JavaScript en el servidor. Nos permite ejecutar código JavaScript fuera del navegador, ideal para herramientas, scripts y desarrollo backend.
+
+* **📦 npm (Node Package Manager)**: Es el gestor de paquetes que viene con Node.js. Sirve para instalar librerías y dependencias necesarias para tu proyecto (como `ethers`, `dotenv`, `hardhat`, etc.).
+
+> ✅ Estas tres herramientas son esenciales si vas a trabajar en desarrollo web moderno o proyectos con tecnologías blockchain como Hardhat o Ethereum.
+
+
+### 🧪 1. Verificar que tienes `git` instalado
+
+Antes de clonar el repositorio, asegúrate de que tienes Git instalado en tu sistema. Abre una terminal y ejecuta:
+
+```bash
+git --version
+```
+
+* Si ves un mensaje como `git version 2.34.1` ✅, ¡todo está listo!
+* Si te sale un error tipo `command not found` ❌, descarga e instala Git desde:
+
+👉 [https://git-scm.com/downloads](https://git-scm.com/downloads)
+
+> Una vez instalado, **cierra y vuelve a abrir la terminal** para que se apliquen los cambios.
+
+---
+
+### 🧪 2. Verificar que tienes `Node.js` y `npm` instalados
+
+Necesitamos `Node.js` y su gestor de paquetes `npm`. Compruébalo con estos comandos:
+
+```bash
+node --version
+npm --version
+```
+
+* Si ves algo como `v18.16.0` y `9.5.1` ✅, ¡perfecto!
+* Si no se reconoce el comando ❌, instala Node.js (incluye npm automáticamente) desde:
+
+👉 [https://nodejs.org](https://nodejs.org)
+
+> Te recomiendo instalar la versión **LTS** (Long Term Support) para mayor compatibilidad.
+
+---
+
+## 📁 Parte 2: Crear y subir imagen + metadatos a IPFS
 
 ### 🧠 1. Obtener una imagen (opcional pero recomendado)
 
@@ -93,23 +147,7 @@ El archivo `metadata.json` describe tu NFT. Crea un archivo en el mismo director
 
 ---
 
-## 💻 Parte 2: Clonar el repositorio y desplegar el NFT
-
-### 🧪 0. Verificar que tienes `git` instalado
-
-Antes de clonar el repositorio, asegúrate de que tienes Git instalado en tu sistema. Abre una terminal y ejecuta:
-
-```bash
-git --version
-```
-
-* Si ves un mensaje como `git version 2.34.1` ✅, ¡todo está listo!
-* Si te sale un error tipo “command not found” ❌, descarga e instala Git desde:
-
-👉 [https://git-scm.com/downloads](https://git-scm.com/downloads)
-
-> Una vez instalado, cierra y vuelve a abrir la terminal para que se apliquen los cambios.
-
+## 💻 Parte 3: Clonar el repositorio y desplegar el NFT
 
 ### 📦 1. Clonar el repositorio base
 
@@ -189,15 +227,23 @@ npx hardhat run scripts/deploy.js --network sepolia
 2. Sustituye:
 
 ```js
+const metadatas = [
+  "URL_DEL_METADATA"
+];
+
+// Resto del código...
+
 const contrato = await hre.ethers.getContractAt("MiNFT", "DIRECCION_DEL_CONTRATO");
-const tx = await contrato.acunar(deployer.address, "URL_DEL_METADATA");
 ```
 
 Reemplaza por ejemplo:
 
 ```js
+const metadatas = [
+  "https://gateway.pinata.cloud/ipfs/Qm123..."
+];
+
 const contrato = await hre.ethers.getContractAt("MiNFT", "0x1234...ABCD");
-const tx = await contrato.acunar(deployer.address, "https://gateway.pinata.cloud/ipfs/Qm123...");
 ```
 
 3. Ejecuta el script:
@@ -247,4 +293,44 @@ Puedes compartirlo con otros y seguir explorando el mundo de la Web3 y los contr
 ✅ Si todo va bien, tu compañero podrá ver el NFT importándolo en su MetaMask, tal como hiciste tú.
 
 ---
+
+
+## ➕ ¿Cómo acuñar más imágenes?
+
+### 🔁 Pasos para cada nueva imagen:
+
+1. **🔍 Crea o consigue una nueva imagen**
+   Usa IA, una foto, o un editor como hiciste en la Parte 1.
+
+2. **📝 Genera un nuevo archivo `metadata_X.json`**
+   Crea un archivo JSON similar al primero, pero con contenido adaptado y una URL diferente en `image`. Por ejemplo:
+   `metadata_1.json`, `metadata_2.json`, etc.
+
+3. **📤 Sube la nueva imagen a Pinata**
+   Obtén su URL pública (IPFS) y actualiza el campo `image` del nuevo `metadata_X.json`.
+
+4. **📤 Sube el nuevo `metadata_X.json` a Pinata**
+   Copia su URL IPFS. Lo necesitarás para acuñar.
+
+5. **🎯 Acuña el nuevo NFT con un nuevo `tokenId`**
+
+Abre `scripts/acunar.js` y modifica el script así:
+
+
+```js
+const metadatas = [
+  "URL_DEL_METADATA_1",
+  "URL_DEL_METADATA_2",
+  "URL_DEL_METADATA_3"
+];
+
+```
+
+Luego ejecútalo:
+
+```bash
+npx hardhat run scripts/acunar.js --network sepolia
+```
+
+Si recibes un mensaje de éxito, ¡todos los NFTs han sido acuñados! 🎉
 

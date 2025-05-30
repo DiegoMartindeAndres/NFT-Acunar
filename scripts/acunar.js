@@ -1,11 +1,17 @@
 const hre = require("hardhat");
 
+const metadatas = [
+  "URL_DEL_METADATA"
+];
+
 async function main() {
   const [deployer] = await hre.ethers.getSigners();
   const contrato = await hre.ethers.getContractAt("MiNFT", "DIRECCION_DEL_CONTRATO");
-  const tx = await contrato.acunar(deployer.address, "URL_DEL_METADATA");
-  await tx.wait();
-  console.log("NFT acunado con éxito");
+  for (const uri of metadatas) {
+    const tx = await contrato.acunar(deployer.address, uri);
+    await tx.wait();
+    console.log(`Acuñado NFT con URI: ${uri}`);
+  }
 }
 
 main().catch((error) => {
